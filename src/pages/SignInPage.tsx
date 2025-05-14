@@ -1,31 +1,19 @@
-import { useRef, useState, type RefObject } from "react";
 import { NikeIcon, JumpmanIcon } from "@/assets/icons";
-import useClickOutside from "@/hooks/useClickOutside";
-import { isEmailValid } from "@/utils/utils";
+import useInput from "@/components/Input";
 
 export default function SignInPage() {
-  const inputRef = useRef<HTMLInputElement>(null);
-  const [email, setEmail] = useState("");
-  const [error, setError] = useState("");
+  const [email, Email] = useInput({
+    name: "email",
+    type: "text",
+    placeholder: "Email",
+  });
+  const [password, Password] = useInput({
+    name: "password",
+    type: "password",
+    placeholder: "Password",
+  });
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setError("");
-    setEmail(e.target.value);
-    if (!isEmailValid(e.target.value)) {
-      setError("Invalid email address");
-    }
-  };
-
-  const handleClickOutside = () => {
-    if (email.length === 0) {
-      setError("Email is required");
-    } else {
-      setError("");
-    }
-  };
-
-  useClickOutside(inputRef as RefObject<HTMLElement>, handleClickOutside);
-
+  console.log(email, password);
   return (
     <div className="w-[400px] mx-auto mt-6">
       <div className="flex gap-4">
@@ -36,19 +24,13 @@ export default function SignInPage() {
         Enter your email to join us or sign in.
       </p>
       <div className="mt-4">
-        <input
-          ref={inputRef}
-          value={email}
-          onChange={handleChange}
-          className="border border-[#757575] rounded-lg h-14 px-3 block w-full outline-0"
-          style={{
-            border: error !== "" ? "1px solid red" : "1px solid #757575",
-            transition: "outline 0.3s ease",
-          }}
-          type="text"
-          placeholder="email"
-        />
-        {error !== "" && <p className="text-red-500 text-sm mt-2">{error}</p>}
+        <div className="mb-3">{Email}</div>
+        <div>{Password}</div>
+      </div>
+      <div className="mt-5">
+        <button className="bg-black rounded-lg text-white px-6 py-1 cursor-pointer">
+          Submit
+        </button>
       </div>
       <p className="text-[#757575] text-sm mt-4">
         By continuing, I agree to Nike’s Privacy Policy and Terms of Use.
