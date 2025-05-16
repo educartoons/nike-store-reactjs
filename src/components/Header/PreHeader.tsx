@@ -1,9 +1,32 @@
+import { useNavigate } from "react-router";
 import { ConverseIcon, JumpmanIcon } from "@/assets/icons";
 import Wrapper from "../Wrapper";
 
-const ITEMS = ["Find a Store", "Help", "Join Us", "Sign In"];
+const ITEMS = [
+  {
+    name: "Find Store",
+    link: "/find-store",
+  },
+  {
+    name: "Help",
+    link: "/help",
+  },
+  {
+    name: "Join Us",
+    link: "/lookup",
+  },
+  {
+    name: "Sign In",
+    link: "/lookup",
+  },
+];
 
 export default function PreHeader() {
+  const navigate = useNavigate();
+
+  const handleClick = (link: string) => {
+    navigate(link);
+  };
   return (
     <div className="bg-[#f5f5f5] py-1">
       <Wrapper>
@@ -19,9 +42,13 @@ export default function PreHeader() {
           <div>
             <ul className="flex gap-6">
               {ITEMS.map((item, index) => (
-                <li>
-                  <a className="text-text-primary text-xs relative" href="">
-                    {item}
+                <li key={index}>
+                  <a
+                    onClick={() => handleClick(item.link)}
+                    className="text-text-primary text-xs relative"
+                    href=""
+                  >
+                    {item.name}
                     {index !== ITEMS.length - 1 ? (
                       <span className="absolute -right-3 top-0 w-[1px] h-[14px] bg-black"></span>
                     ) : null}

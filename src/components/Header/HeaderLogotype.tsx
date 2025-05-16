@@ -7,7 +7,7 @@ export default function HeaderLogotype() {
       viewBox="0 0 24 24"
       role="img"
       width="100%"
-      height="auto"
+      height="100%"
       fill="none"
     >
       <path

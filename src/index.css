@@ -1,5 +1,9 @@
 @import "tailwindcss";
 
+body {
+  font-family: "Helvetica Now Text", Helvetica, Arial, sans-serif;
+}
+
 @theme {
   --podium-cds-transition-duration-normal: 250ms;
   --podium-cds-transition-duration-fast: 150ms;

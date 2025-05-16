@@ -7,7 +7,7 @@ export default function ProductList() {
   return (
     <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
       {products.map((product) => (
-        <Product data={product} />
+        <Product key={product.id} data={product} />
       ))}
     </div>
   );
