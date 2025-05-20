@@ -6,6 +6,8 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { db } from "@/firebase/firebase";
 import { useUserContext } from "@/context/user-context";
+import { useState } from "react";
+import Spinner from "./Spinner";
 
 const schema = z.object({
   email: z
@@ -25,19 +27,21 @@ export default function SignIn() {
     mode: "onBlur",
     resolver: zodResolver(schema),
   });
+  const [loading, setLoading] = useState(false);
   const { handleSetUserEmail } = useUserContext();
 
   const navigate = useNavigate();
 
   const onSubmit = async (data: Schema) => {
     handleSetUserEmail(data.email);
+    setLoading(true);
     const usersRef = collection(db, "users");
     const q = query(usersRef, where("email", "==", data.email));
     const querySnapshot = await getDocs(q);
     if (querySnapshot.empty) {
       navigate("/join");
     } else {
-      console.log("User found");
+      navigate("/challenge");
     }
   };
 
@@ -68,8 +72,8 @@ export default function SignIn() {
         By continuing, I agree to Nike’s Privacy Policy and Terms of Use.
       </p>
       <div className="mt-5 flex justify-end">
-        <button className="bg-black rounded-full text-white px-6 py-2 cursor-pointer">
-          Continue
+        <button className="bg-black rounded-full text-white px-6 py-2 cursor-pointer w-[120px] flex justify-center">
+          {loading ? <Spinner /> : "Continue"}
         </button>
       </div>
     </form>

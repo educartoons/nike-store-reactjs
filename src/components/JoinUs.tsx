@@ -3,15 +3,14 @@ import { useSnackbar } from "notistack";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
-import { getAuth, createUserWithEmailAndPassword } from "firebase/auth";
-import { doc, setDoc } from "firebase/firestore";
 import { NikeIcon, JumpmanIcon } from "@/assets/icons";
-import { app, db } from "@/firebase/firebase";
 import ErrorMessage from "./ErrorMessage";
 import { useUserContext } from "@/context/user-context";
 import { useNavigate } from "react-router";
 import { Input } from "./library/Input";
 import { InputError } from "./library/InputError";
+import { useAuthContext } from "@/context/auth-context";
+import { FirebaseError } from "firebase/app";
 
 const schema = z.object({
   firstName: z.string().nonempty("Required"),
@@ -24,8 +23,6 @@ const schema = z.object({
 
 type Schema = z.infer<typeof schema>;
 
-const auth = getAuth(app);
-
 export default function JoinUs() {
   const {
     register,
@@ -36,6 +33,7 @@ export default function JoinUs() {
     resolver: zodResolver(schema),
   });
   const { user } = useUserContext();
+  const { signUp } = useAuthContext();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const navigate = useNavigate();
@@ -46,32 +44,22 @@ export default function JoinUs() {
       try {
         setLoading(true);
         setError(null);
-        const response = await createUserWithEmailAndPassword(
-          auth,
-          user?.email,
-          data.password
-        );
-        if (response.user) {
-          await setDoc(doc(db, "users", response.user.uid), {
-            first_name: data.firstName,
-            last_name: data.lastName,
-            email: response.user.email,
-          });
-          enqueueSnackbar("You were signed up succesfuully!", {
-            anchorOrigin: {
-              horizontal: "right",
-              vertical: "top",
-            },
-            variant: "success",
-          });
-          navigate("/");
-        }
+        await signUp(user.email, data.password, data.firstName, data.lastName);
+        enqueueSnackbar("You were signed up succesfuully!", {
+          anchorOrigin: {
+            horizontal: "right",
+            vertical: "top",
+          },
+          variant: "success",
+        });
+        navigate("/");
       } catch (error) {
-        console.error(error);
-        if (error.code === "auth/email-already-in-use") {
-          setError("User already registered");
-        } else {
-          setError("Something went wrong");
+        if (error instanceof FirebaseError) {
+          if (error.code === "auth/email-already-in-use") {
+            setError("User already registered");
+          } else {
+            setError("Something went wrong");
+          }
         }
       } finally {
         setLoading(false);

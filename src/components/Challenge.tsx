@@ -1,7 +1,14 @@
+import { FirebaseError } from "firebase/app";
 import { NikeIcon, JumpmanIcon } from "@/assets/icons";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
+import { useUserContext } from "@/context/user-context";
+import { useNavigate } from "react-router";
+import { useSnackbar } from "notistack";
+import ErrorMessage from "./ErrorMessage";
+import { useState } from "react";
+import { useAuthContext } from "@/context/auth-context";
 
 const schema = z.object({
   password: z
@@ -21,9 +28,32 @@ export default function Challenge() {
     mode: "onBlur",
     resolver: zodResolver(schema),
   });
+  const { user } = useUserContext();
+  const navigate = useNavigate();
+  const { enqueueSnackbar } = useSnackbar();
+  const [error, setError] = useState<string | null>(null);
+  const { signIn } = useAuthContext();
 
-  const onSubmit = (data: Schema) => {
-    console.log(data);
+  const onSubmit = async (data: Schema) => {
+    if (user?.email) {
+      try {
+        await signIn(user.email, data.password);
+        enqueueSnackbar("You were signed in succesfully!", {
+          anchorOrigin: {
+            horizontal: "right",
+            vertical: "top",
+          },
+          variant: "success",
+        });
+        navigate("/");
+      } catch (error) {
+        if (error instanceof FirebaseError) {
+          if (error.code === "auth/invalid-credential") {
+            setError("Your credentials are invalid");
+          }
+        }
+      }
+    }
   };
 
   return (
@@ -35,9 +65,14 @@ export default function Challenge() {
       <p className="text-3xl font-normal mt-4 tracking-wider">
         What's your password?
       </p>
-      <p className="mt-2">{email || "educartoons@gmail.com"}</p>
+      <p className="mt-2">{user?.email}</p>
       <div className="mt-4">
         <div className="mb-3">
+          {error && (
+            <div className="mb-4">
+              <ErrorMessage message={error} />
+            </div>
+          )}
           <input
             className="border border-[#757575] rounded-lg h-14 px-3 block w-full outline-0"
             placeholder="Password"

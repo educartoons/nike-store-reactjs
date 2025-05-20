@@ -1,32 +1,13 @@
 import { useNavigate } from "react-router";
 import { ConverseIcon, JumpmanIcon } from "@/assets/icons";
 import Wrapper from "../Wrapper";
-
-const ITEMS = [
-  {
-    name: "Find Store",
-    link: "/find-store",
-  },
-  {
-    name: "Help",
-    link: "/help",
-  },
-  {
-    name: "Join Us",
-    link: "/lookup",
-  },
-  {
-    name: "Sign In",
-    link: "/lookup",
-  },
-];
+import PreHeaderLink from "./PreHeaderLink";
+import { useAuthContext } from "@/context/auth-context";
 
 export default function PreHeader() {
   const navigate = useNavigate();
+  const { user, signOut } = useAuthContext();
 
-  const handleClick = (link: string) => {
-    navigate(link);
-  };
   return (
     <div className="bg-[#f5f5f5] py-1">
       <Wrapper>
@@ -41,20 +22,43 @@ export default function PreHeader() {
           </div>
           <div>
             <ul className="flex gap-6">
-              {ITEMS.map((item, index) => (
-                <li key={index}>
-                  <a
-                    onClick={() => handleClick(item.link)}
-                    className="text-text-primary text-xs relative"
-                    href=""
-                  >
-                    {item.name}
-                    {index !== ITEMS.length - 1 ? (
-                      <span className="absolute -right-3 top-0 w-[1px] h-[14px] bg-black"></span>
-                    ) : null}
-                  </a>
-                </li>
-              ))}
+              <PreHeaderLink
+                name="Find Store"
+                lastItem={false}
+                handleClick={() => navigate("/")}
+              />
+              <PreHeaderLink
+                name="Help"
+                lastItem={false}
+                handleClick={() => navigate("/")}
+              />
+              {user ? (
+                <>
+                  <PreHeaderLink
+                    name="Eduar Apaza"
+                    lastItem={false}
+                    handleClick={() => navigate("")}
+                  />
+                  <PreHeaderLink
+                    name="Sign Out"
+                    lastItem={true}
+                    handleClick={signOut}
+                  />
+                </>
+              ) : (
+                <>
+                  <PreHeaderLink
+                    name="Join Us"
+                    lastItem={false}
+                    handleClick={() => navigate("/lookup")}
+                  />
+                  <PreHeaderLink
+                    name="Sign In"
+                    lastItem={true}
+                    handleClick={() => navigate("/lookup")}
+                  />
+                </>
+              )}
             </ul>
           </div>
         </div>
