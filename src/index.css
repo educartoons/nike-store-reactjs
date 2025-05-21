@@ -1,7 +1,7 @@
 @import "tailwindcss";
 
 body {
-  font-family: "Helvetica Now Text", Helvetica, Arial, sans-serif;
+  font-family: "IBM Plex Sans", sans-serif;
 }
 
 @theme {

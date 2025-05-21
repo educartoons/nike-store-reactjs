@@ -5,9 +5,9 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { db } from "@/firebase/firebase";
-import { useUserContext } from "@/context/user-context";
 import { useState } from "react";
 import Spinner from "./Spinner";
+import { authStore } from "@/store/authStore";
 
 const schema = z.object({
   email: z
@@ -28,12 +28,12 @@ export default function SignIn() {
     resolver: zodResolver(schema),
   });
   const [loading, setLoading] = useState(false);
-  const { handleSetUserEmail } = useUserContext();
+  const setEmail = authStore((state) => state.setEmail);
 
   const navigate = useNavigate();
 
   const onSubmit = async (data: Schema) => {
-    handleSetUserEmail(data.email);
+    setEmail(data.email);
     setLoading(true);
     const usersRef = collection(db, "users");
     const q = query(usersRef, where("email", "==", data.email));

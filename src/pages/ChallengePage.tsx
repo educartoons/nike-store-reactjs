@@ -1,13 +1,11 @@
 import Challenge from "@/components/Challenge";
-import { useUserContext } from "@/context/user-context";
+import { authStore } from "@/store/authStore";
 import { Navigate } from "react-router";
 
 export default function ChallengePage() {
-  const { user } = useUserContext();
+  const userEmail = authStore((state) => state.email);
 
-  console.log(user);
-
-  if (user?.email === undefined) {
+  if (userEmail === undefined) {
     return <Navigate to="/join" />;
   }
 

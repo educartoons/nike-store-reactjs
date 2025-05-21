@@ -3,12 +3,11 @@ import { NikeIcon, JumpmanIcon } from "@/assets/icons";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
-import { useUserContext } from "@/context/user-context";
 import { useNavigate } from "react-router";
 import { useSnackbar } from "notistack";
 import ErrorMessage from "./ErrorMessage";
 import { useState } from "react";
-import { useAuthContext } from "@/context/auth-context";
+import { authStore } from "@/store/authStore";
 
 const schema = z.object({
   password: z
@@ -28,16 +27,16 @@ export default function Challenge() {
     mode: "onBlur",
     resolver: zodResolver(schema),
   });
-  const { user } = useUserContext();
   const navigate = useNavigate();
   const { enqueueSnackbar } = useSnackbar();
   const [error, setError] = useState<string | null>(null);
-  const { signIn } = useAuthContext();
+  const signIn = authStore((state) => state.sigInUser);
+  const userEmail = authStore((state) => state.email);
 
   const onSubmit = async (data: Schema) => {
-    if (user?.email) {
+    if (userEmail) {
       try {
-        await signIn(user.email, data.password);
+        await signIn(userEmail, data.password);
         enqueueSnackbar("You were signed in succesfully!", {
           anchorOrigin: {
             horizontal: "right",
@@ -65,7 +64,7 @@ export default function Challenge() {
       <p className="text-3xl font-normal mt-4 tracking-wider">
         What's your password?
       </p>
-      <p className="mt-2">{user?.email}</p>
+      <p className="mt-2">{userEmail}</p>
       <div className="mt-4">
         <div className="mb-3">
           {error && (
