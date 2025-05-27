@@ -1,12 +1,15 @@
-import type { DetailedHTMLProps, LiHTMLAttributes, ReactNode } from "react";
+import {
+  useState,
+  type DetailedHTMLProps,
+  type LiHTMLAttributes,
+  type ReactNode,
+} from "react";
 import { motion } from "motion/react";
 
-interface PreHeaderLinkProps
-  extends DetailedHTMLProps<LiHTMLAttributes<HTMLLIElement>, HTMLLIElement> {
+interface PreHeaderLinkProps {
   name: string;
   lastItem: boolean;
   handleClick: () => void;
-  displayMenu?: boolean;
   ContentMenu?: ReactNode;
 }
 
@@ -14,12 +17,28 @@ export default function PreHeaderLink({
   name,
   lastItem,
   handleClick,
-  displayMenu,
   ContentMenu,
   ...rest
 }: PreHeaderLinkProps) {
+  const [displayMenu, setDisplayMenu] = useState(false);
+
+  const handleMouseEnter = () => {
+    if (!ContentMenu) return;
+    setDisplayMenu(true);
+  };
+
+  const handleMouseLeave = () => {
+    if (!ContentMenu) return;
+    setDisplayMenu(false);
+  };
+
   return (
-    <li {...rest} className="relative py-1">
+    <li
+      onMouseEnter={handleMouseEnter}
+      onMouseLeave={handleMouseLeave}
+      {...rest}
+      className="relative py-1"
+    >
       <a
         onClick={handleClick}
         className="text-text-primary text-xs relative font-medium"
@@ -34,9 +53,11 @@ export default function PreHeaderLink({
         <motion.div
           initial={{
             top: "20px",
+            opacity: 0,
           }}
           animate={{
             top: "32px",
+            opacity: 100,
           }}
           className="absolute -right-5 rounded-xl bg-white w-[200px] z-10 p-5"
         >

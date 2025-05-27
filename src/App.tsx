@@ -4,6 +4,8 @@ import LookUpPage from "./pages/LookUpPage";
 import StorePage from "./pages/StorePage";
 import JoinUsPage from "./pages/JoinUsPage";
 import ChallengePage from "./pages/ChallengePage";
+import ProfilePage from "./pages/ProfilePage";
+import PrivateRoute from "./components/PrivateRoute";
 
 export default function App() {
   return (
@@ -14,6 +16,9 @@ export default function App() {
           <Route path="/lookup" element={<LookUpPage />} />
           <Route path="/join" element={<JoinUsPage />} />
           <Route path="/challenge" element={<ChallengePage />} />
+          <Route path="/profile" element={<PrivateRoute />}>
+            <Route path="" element={<ProfilePage />} />
+          </Route>
         </Routes>
       </BrowserRouter>
     </SnackbarProvider>

@@ -3,4 +3,14 @@ function isEmailValid(email: string): boolean {
   return emailRegex.test(email);
 }
 
-export { isEmailValid };
+function getMonthYearFromTimestamp(timestamp: string): string {
+  console.log(timestamp);
+  const date = new Date(Number(timestamp));
+  const options: Intl.DateTimeFormatOptions = {
+    year: "numeric",
+    month: "long",
+  };
+  return date.toLocaleDateString("en-US", options);
+}
+
+export { isEmailValid, getMonthYearFromTimestamp };

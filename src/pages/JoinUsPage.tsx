@@ -1,11 +1,11 @@
 import JoinUs from "@/components/JoinUs";
-import { useUserContext } from "@/context/user-context";
+import { authStore } from "@/store/authStore";
 import { Navigate } from "react-router";
 
 export default function JoinUsPage() {
-  const { user } = useUserContext();
+  const email = authStore((state) => state.email);
 
-  if (user?.email === undefined) {
+  if (email === null) {
     return <Navigate to="/lookup" />;
   }
 

@@ -5,12 +5,11 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { NikeIcon, JumpmanIcon } from "@/assets/icons";
 import ErrorMessage from "./ErrorMessage";
-import { useUserContext } from "@/context/user-context";
 import { useNavigate } from "react-router";
 import { Input } from "./library/Input";
 import { InputError } from "./library/InputError";
-import { useAuthContext } from "@/context/auth-context";
 import { FirebaseError } from "firebase/app";
+import { authStore } from "@/store/authStore";
 
 const schema = z.object({
   firstName: z.string().nonempty("Required"),
@@ -32,19 +31,21 @@ export default function JoinUs() {
     mode: "onBlur",
     resolver: zodResolver(schema),
   });
-  const { user } = useUserContext();
-  const { signUp } = useAuthContext();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const navigate = useNavigate();
   const { enqueueSnackbar } = useSnackbar();
 
+  const email = authStore((state) => state.email);
+  const signUp = authStore((state) => state.signUpUser);
+  const setEmail = authStore((state) => state.setEmail);
+
   const onSubmit = async (data: Schema) => {
-    if (user?.email) {
+    if (email) {
       try {
         setLoading(true);
         setError(null);
-        await signUp(user.email, data.password, data.firstName, data.lastName);
+        await signUp(email, data.password, data.firstName, data.lastName);
         enqueueSnackbar("You were signed up succesfuully!", {
           anchorOrigin: {
             horizontal: "right",
@@ -82,7 +83,7 @@ export default function JoinUs() {
         Now let's make you a Nike Member.
       </p>
       <p className="mt-2">
-        {user?.email}{" "}
+        {email}{" "}
         <a
           onClick={handleEmailEdit}
           className="underline underline-offset-4 text-text-secondary"
