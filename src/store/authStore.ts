@@ -5,13 +5,18 @@ import {
   signInWithEmailAndPassword,
   signOut,
   updateProfile,
-  type User,
 } from "firebase/auth";
 import { doc, setDoc } from "firebase/firestore";
 import { create } from "zustand";
 import { persist, devtools } from "zustand/middleware";
 
 const authInstance = getAuth(app);
+
+interface User {
+  displayName: string;
+  email: string;
+  createdAt: string;
+}
 
 type AuthStoreState = {
   email: string | null;
@@ -45,7 +50,8 @@ const authStore = create<AuthStore>()(
             email,
             password
           );
-          return set(() => ({ user: userCredential.user }));
+          const infoUser = userCredential.user.toJSON();
+          return set(() => ({ user: infoUser as User }));
         },
         signOutUser: async () => {
           await signOut(authInstance);
